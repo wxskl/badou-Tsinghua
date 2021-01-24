@@ -29,37 +29,62 @@ def WarpPerspectiveMatrix(src,dst):
     warpMatrix = warpMatrix.reshape(3, 3)
     return  warpMatrix
 
-def changeImg(warpMatrix):
-    #img1 = cv2.cvtColor(cv2.imread("lenna.png"), cv2.COLOR_BGR2GRAY)
-    #zeroImg = np.zeros(img1.shape[:2], dtype=np.uint8)
-    img1 = cv2.imread("images/lenna.png")
-    zeroImg = np.zeros(img1.shape, dtype=np.uint8)
+def changeImg(warpMatrix, img1, tuple1):
+    maxImgWdith, maxImgHeight = img1.shape[:2]
+    zeroImg = np.zeros(tuple1, dtype=np.uint8)
+    # 助教是将值取出，作简单计算
+    # fix_matrix = warpMatrix
+    # a_11 = fix_matrix[0, 0]
+    # a_12 = fix_matrix[0, 1]
+    # a_13 = fix_matrix[0, 2]
+    # a_21 = fix_matrix[1, 0]
+    # a_22 = fix_matrix[1, 1]
+    # a_23 = fix_matrix[1, 2]
+    # a_31 = fix_matrix[2, 0]
+    # a_32 = fix_matrix[2, 1]
+    # a_33 = fix_matrix[2, 2]
+    warpMatrix = np.mat(warpMatrix).I
     for i in range(len(zeroImg)):
         for j in range(len(zeroImg[i])):
             orignal = np.dot(warpMatrix, np.array([i, j, 1]).T)
-            x,y,z = orignal[:]
-            x = int(np.round(x/z))
-            y = int(np.round(y/z))
-            #处理超出范围的值
-            if x >= len(zeroImg):
-                x = len(zeroImg) - 1
+            z = orignal[0, 2]
+            x = orignal[0, 0] / z
+            y = orignal[0, 1] / z
+            # 助教将原有公式作转换得到x,y的值并作简单计算，效率上高一些
+            # Y_fix = j;
+            # X_fix = i;
+            # y_denominator = (a_31 * Y_fix - a_21) * a_12 - (a_31 * Y_fix - a_21) * a_32 * X_fix - (
+            #             a_31 * X_fix - a_11) * a_22 + (a_31 * X_fix - a_11) * a_32 * Y_fix;
+            # y = ((a_23 - a_33 * Y_fix - ((a_31 * Y_fix - a_21) * a_13) / (a_31 * X_fix - a_11)
+            #       + ((a_31 * Y_fix - a_21) * a_33 * X_fix) / (a_31 * X_fix - a_11))
+            #      * (a_31 * X_fix - a_11)) / y_denominator
+            #
+            # x = (a_12 * y + a_13 - (a_32 * y * X_fix + a_33 * X_fix)) / (a_31 * X_fix - a_11)
+
+            x = int(np.round(x))
+            y = int(np.round(y))
+            # 超出位置作抛弃处理
+            if x >= maxImgWdith:
+                x = maxImgWdith - 1
             elif x <= 0:
                 x = 0
-            if y >= len(zeroImg[i]):
-                y = len(zeroImg[i]) - 1
+            if y >= maxImgHeight:
+                y = maxImgHeight - 1
             elif y <= 0:
                 y = 0
-            zeroImg[i,j] = img1[x,y]
+            zeroImg[i, j] = img1[x, y]
 
-    cv2.imshow("old",img1)
+    cv2.imshow("old", img1)
     cv2.imshow("new", zeroImg)
-    cv2.waitKey(0)
-
 
 if __name__ == "__main__":
     #生成原始数据
     src = np.float32([[0,30],[ 512,30],[30,512],[512,512]])
-    dst = np.float32([[0,0],[ 512,0],[0,512],[512,512]])
+    dst = np.float32([[0, 0], [1024, 0], [0, 1024], [1024, 1024]])
+    #dst = np.float32([[0,0],[ 512,0],[0,512],[512,512]])
     warpMatrix = WarpPerspectiveMatrix(src,dst)
-    changeImg(warpMatrix)
+    img1 = cv2.cvtColor(cv2.imread("images/lenna.png"), cv2.COLOR_BGR2GRAY)
+    #changeImg(warpMatrix, img1, (512, 512))
+    changeImg(warpMatrix, img1, (1024, 1024))
+    cv2.waitKey(0)
 
