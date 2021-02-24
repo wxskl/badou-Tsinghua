@@ -97,10 +97,44 @@ cv2.imwrite('Hist_Equ_RGBlenna.png', equalization)  # 保存图像
 
 
 # # 灰度图像的直方图均衡化
-# img = cv2.imread('lenna.png')  # 读取原图
-# gray = cv2.cvtColor(img, cv2.COLOR_BAYER_BG2GRAY)  # cv2默认读取BGR格式转为gray图
-#
-# # 直方图均衡化
-# dst = cv2.equalizeHist(gray)
-# # 画出直方图
+img2 = cv2.imread('lenna.png')  # 读取原图
+gray = cv2.cvtColor(img2, cv2.COLOR_BAYER_BG2GRAY)  # cv2默认读取BGR格式转为gray图
+
+# 直方图均衡化
+dst = cv2.equalizeHist(gray)
+# 画出直方图
+hist = cv2.calcHist([dst], [0], None, [256], [0, 256])
+'''
+cv2.calcHist(images, channels, mask, histSize, ranges[, hist[, accumulate ]]) ->hist
+此函数用于计算图像直方图：
+    imaes:输入的图像
+    channels:选择图像的通道
+    mask:掩膜，是一个大小和image一样的np数组，其中把需要处理的部分指定为1，不需要处理的部分指定为0，一般设置为None，表示处理整幅图像
+    histSize:使用多少个bin(柱子)，一般为256
+    ranges:像素值的范围，一般为[0,255]表示0~255
+'''
+plt.figure()
+plt.hist(dst.ravel(), 256)  # numpy.ravel()将多维数组转为一维数组
+plt.show()
+
+cv2.imshow("Histogram Equalization", np.hstack([gray, dst]))
+# 拼接数组：np.vstack():在竖直方向上堆叠 np.hstack():在水平方向上平铺
+cv2.waitKey(0)
+
+'''
+# 彩色图像直方图均衡化
+img = cv2.imread("lenna.png", 1)
+cv2.imshow("src", img)
+
+# 彩色图像均衡化,需要分解通道 对每一个通道均衡化
+(b, g, r) = cv2.split(img)
+bH = cv2.equalizeHist(b)
+gH = cv2.equalizeHist(g)
+rH = cv2.equalizeHist(r)
+# 合并每一个通道
+result = cv2.merge((bH, gH, rH))
+cv2.imshow("dst_rgb", result)
+
+cv2.waitKey(0)
+'''
 
