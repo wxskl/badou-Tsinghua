@@ -109,7 +109,6 @@ def get_result(warpMatrix, dst, img):
             result[i, j, 1] = img[int(y), int(x), 1]
             result[i, j, 2] = img[int(y), int(x), 2]
 
-
     return result
 
 if __name__ == '__main__':
