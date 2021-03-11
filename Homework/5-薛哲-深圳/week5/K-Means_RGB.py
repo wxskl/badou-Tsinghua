@@ -13,8 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #读取原始图像
-img = cv2.imread('lenna.png') 
-# print (img.shape)
+img = cv2.imread('lenna.png')
 # print(img)
 
 #图像二维像素转换为一维
