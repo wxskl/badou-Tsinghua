@@ -14,11 +14,14 @@ import matplotlib.pyplot as plt
 
 #读取原始图像
 img = cv2.imread('lenna.png')
-# print(img)
+print(img)
 
 #图像二维像素转换为一维
 data = img.reshape((-1,3))  # -1表示维度不确定,reshape的规则是从原图最后一个维度开始取数
-# print('--------')
+print('--------')
+ttt = img.reshape((262144,-1))
+print(ttt)
+print('--------')
 # print(data)
 data = np.float32(data)
 
